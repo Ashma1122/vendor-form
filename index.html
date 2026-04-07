@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendor Registration — Mumbai Construction Directory</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f4f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-header .logo {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 8px;
+    }
+
+    .page-header h1 {
+      font-size: 26px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 6px;
+    }
+
+    .page-header p {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 2rem;
+      border: 1px solid #e8e6e0;
+    }
+
+    .progress-track {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 2rem;
+    }
+
+    .progress-track .seg {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: #e8e6e0;
+      transition: background 0.3s;
+    }
+
+    .progress-track .seg.done { background: #2563eb; }
+
+    .step { display: none; }
+    .step.active { display: block; }
+
+    .step-meta {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 4px;
+    }
+
+    .step-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 1.5rem;
+    }
+
+    .field { margin-bottom: 1.1rem; }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #444;
+      margin-bottom: 5px;
+    }
+
+    .req { color: #e53e3e; }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 10px 13px;
+      font-size: 15px;
+      font-family: inherit;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #fafaf9;
+      color: #111;
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: #2563eb;
+      background: #fff;
+    }
+
+    .field textarea { resize: vertical; min-height: 84px; }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
+
+    .hint {
+      font-size: 12px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 6px;
+    }
+
+    .chip {
+      padding: 7px 15px;
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      background: #fafaf9;
+      color: #555;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .chip:hover { border-color: #aaa; color: #222; }
+
+    .chip.on {
+      background: #eff6ff;
+      border-color: #2563eb;
+      color: #1d4ed8;
+    }
+
+    .radio-stack { display: flex; flex-direction: column; gap: 7px; margin-top: 6px; }
+
+    .radio-opt {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #555;
+      background: #fafaf9;
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    .radio-opt:hover { border-color: #aaa; }
+
+    .radio-opt.on {
+      background: #eff6ff;
+      border-color: #2563eb;
+      color: #1d4ed8;
+    }
+
+    .radio-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      flex-shrink: 0;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .radio-opt.on .radio-dot {
+      border-color: #2563eb;
+      background: #2563eb;
+    }
+
+    .radio-dot::after {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #fff;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .radio-opt.on .radio-dot::after { opacity: 1; }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 1.75rem;
+    }
+
+    .btn {
+      padding: 11px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: 1px solid #ddd;
+      background: #fff;
+      color: #444;
+      transition: all 0.15s;
+    }
+
+    .btn:hover { background: #f5f4f0; }
+
+    .btn.primary {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #fff;
+    }
+
+    .btn.primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .success-wrap {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+
+    .success-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+
+    .success-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 8px;
+    }
+
+    .success-sub {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.65;
+      max-width: 380px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .summary {
+      background: #fafaf9;
+      border: 1px solid #e8e6e0;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      text-align: left;
+      margin-bottom: 1.25rem;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 6px 0;
+      font-size: 13px;
+      border-bottom: 1px solid #f0ede8;
+    }
+
+    .summary-row:last-child { border-bottom: none; }
+    .summary-row .k { color: #999; flex-shrink: 0; }
+    .summary-row .v { color: #222; font-weight: 500; text-align: right; }
+
+    .error-msg {
+      background: #fff5f5;
+      border: 1px solid #fed7d7;
+      color: #c53030;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <div class="logo">Mumbai Construction Directory</div>
+    <h1>Register as a vendor</h1>
+    <p>Takes 2 minutes · Free listing · WhatsApp confirmation</p>
+  </div>
+
+  <div class="card">
+    <div class="progress-track">
+      <div class="seg done" id="seg1"></div>
+      <div class="seg" id="seg2"></div>
+      <div class="seg" id="seg3"></div>
+      <div class="seg" id="seg4"></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="step active" id="s1">
+      <div class="step-meta">Step 1 of 4</div>
+      <div class="step-title">Basic details</div>
+
+      <div class="field">
+        <label>Business name <span class="req">*</span></label>
+        <input type="text" id="biz-name" placeholder="e.g. Sharma Tiling Works" autocomplete="organization">
+      </div>
+
+      <div class="field">
+        <label>Contact person <span class="req">*</span></label>
+        <input type="text" id="contact-name" placeholder="Full name" autocomplete="name">
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>WhatsApp number <span class="req">*</span></label>
+          <input type="tel" id="whatsapp" placeholder="10-digit number" maxlength="10" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label>Alternate number</label>
+          <input type="tel" id="alt-phone" placeholder="Optional" maxlength="10" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Years in business <span class="req">*</span></label>
+        <select id="years">
+          <option value="">Select experience</option>
+          <option>Less than 1 year</option>
+          <option>1–3 years</option>
+          <option>3–5 years</option>
+          <option>5–10 years</option>
+          <option>More than 10 years</option>
+        </select>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn primary" onclick="next(1)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step" id="s2">
+      <div class="step-meta">Step 2 of 4</div>
+      <div class="step-title">Trade & specialisation</div>
+
+      <div class="field">
+        <label>Trades offered <span class="req">*</span></label>
+        <p class="hint">Select all that apply</p>
+        <div class="chips" id="trades">
+          <div class="chip" onclick="toggleChip(this)">Tiling</div>
+          <div class="chip" onclick="toggleChip(this)">Gypsum plaster</div>
+          <div class="chip" onclick="toggleChip(this)">POP / false ceiling</div>
+          <div class="chip" onclick="toggleChip(this)">Blockwork / masonry</div>
+          <div class="chip" onclick="toggleChip(this)">Waterproofing</div>
+          <div class="chip" onclick="toggleChip(this)">Screeding / flooring</div>
+          <div class="chip" onclick="toggleChip(this)">External plastering</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Project type</label>
+        <div class="radio-stack" id="proj-type">
+          <div class="radio-opt" onclick="selectRadio(this)"><div class="radio-dot"></div>Residential only</div>
+          <div class="radio-opt" onclick="selectRadio(this)"><div class="radio-dot"></div>Commercial only</div>
+          <div class="radio-opt" onclick="selectRadio(this)"><div class="radio-dot"></div>Both residential and commercial</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Typical team size</label>
+        <select id="team-size">
+          <option value="">Select</option>
+          <option>Solo (just me)</option>
+          <option>2–5 workers</option>
+          <option>6–15 workers</option>
+          <option>15+ workers</option>
+        </select>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" onclick="prev(2)">← Back</button>
+        <button class="btn primary" onclick="next(2)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step" id="s3">
+      <div class="step-meta">Step 3 of 4</div>
+      <div class="step-title">Areas you work in</div>
+
+      <div class="field">
+        <label>Zones served in Mumbai <span class="req">*</span></label>
+        <p class="hint">Select all that apply</p>
+        <div class="chips" id="zones">
+          <div class="chip" onclick="toggleChip(this)">South Mumbai</div>
+          <div class="chip" onclick="toggleChip(this)">Western Suburbs South</div>
+          <div class="chip" onclick="toggleChip(this)">Western Suburbs North</div>
+          <div class="chip" onclick="toggleChip(this)">Central / Harbour</div>
+          <div class="chip" onclick="toggleChip(this)">Thane</div>
+          <div class="chip" onclick="toggleChip(this)">Navi Mumbai</div>
+          <div class="chip" onclick="toggleChip(this)">Pan Mumbai (all zones)</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Based in (area / neighbourhood)</label>
+        <input type="text" id="base-area" placeholder="e.g. Kurla, Andheri East">
+      </div>
+
+      <div class="field">
+        <label>GST registered?</label>
+        <div class="radio-stack" id="gst">
+          <div class="radio-opt" onclick="selectRadio(this)"><div class="radio-dot"></div>Yes</div>
+          <div class="radio-opt" onclick="selectRadio(this)"><div class="radio-dot"></div>No</div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn" onclick="prev(3)">← Back</button>
+        <button class="btn primary" onclick="next(3)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="step" id="s4">
+      <div class="step-meta">Step 4 of 4</div>
+      <div class="step-title">Final details</div>
+
+      <div class="field">
+        <label>Languages spoken</label>
+        <div class="chips" id="langs">
+          <div class="chip" onclick="toggleChip(this)">Hindi</div>
+          <div class="chip" onclick="toggleChip(this)">Marathi</div>
+          <div class="chip" onclick="toggleChip(this)">English</div>
+          <div class="chip" onclick="toggleChip(this)">Gujarati</div>
+          <div class="chip" onclick="toggleChip(this)">Tamil</div>
+          <div class="chip" onclick="toggleChip(this)">Telugu</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>How did you hear about us?</label>
+        <select id="source">
+          <option value="">Select</option>
+          <option>WhatsApp / referral</option>
+          <option>Site visit</option>
+          <option>Social media</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Anything else to add?</label>
+        <textarea id="notes" placeholder="Brands you work with, certifications, special skills..."></textarea>
+      </div>
+
+      <div class="error-msg" id="err">Something went wrong. Please try again.</div>
+
+      <div class="btn-row">
+        <button class="btn" onclick="prev(4)">← Back</button>
+        <button class="btn primary" id="submit-btn" onclick="submitForm()">Submit listing</button>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="step" id="done">
+      <div class="success-wrap">
+        <div class="success-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12l5 5L19 7" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="success-title">Listing submitted!</div>
+        <div class="success-sub">We'll review and add you to the directory within 48 hours. We'll WhatsApp you once you're live.</div>
+        <div class="summary" id="summary"></div>
+        <button class="btn" onclick="resetForm()">Submit another vendor</button>
+      </div>
+    </div>
+
+  </div>
+
+  <p style="text-align:center;font-size:12px;color:#bbb;margin-top:1.5rem">
+    Mumbai Construction Directory &middot; Free vendor registration
+  </p>
+
+  <script>
+    // ─────────────────────────────────────────────────────────────
+    // CONFIGURATION — paste your Google Apps Script URL here
+    // ─────────────────────────────────────────────────────────────
+    const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwy2SMUo5NXnKLN242ywz2a4DtUNnd_ai098fDgVDJ7ZDntDe_TdY-SfaGWwA40YVfY-g/exec';
+    // ─────────────────────────────────────────────────────────────
+
+    let currentStep = 1;
+
+    function showStep(n) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      const el = n === 'done' ? document.getElementById('done') : document.getElementById('s' + n);
+      if (el) el.classList.add('active');
+      for (let i = 1; i <= 4; i++) {
+        const seg = document.getElementById('seg' + i);
+        if (seg) seg.classList.toggle('done', i <= (n === 'done' ? 4 : n));
+      }
+      currentStep = n;
+    }
+
+    function toggleChip(el) {
+      el.classList.toggle('on');
+    }
+
+    function selectRadio(el) {
+      const siblings = el.parentElement.querySelectorAll('.radio-opt');
+      siblings.forEach(s => s.classList.remove('on'));
+      el.classList.add('on');
+    }
+
+    function getChips(id) {
+      return [...document.querySelectorAll(`#${id} .chip.on`)].map(c => c.textContent.trim());
+    }
+
+    function getRadio(id) {
+      const sel = document.querySelector(`#${id} .radio-opt.on`);
+      return sel ? sel.textContent.trim() : '';
+    }
+
+    function val(id) {
+      return document.getElementById(id)?.value?.trim() || '';
+    }
+
+    function next(n) {
+      if (n === 1) {
+        if (!val('biz-name') || !val('contact-name') || !val('whatsapp') || !val('years')) {
+          alert('Please fill in all required fields.'); return;
+        }
+        if (val('whatsapp').length !== 10 || isNaN(val('whatsapp'))) {
+          alert('Please enter a valid 10-digit WhatsApp number.'); return;
+        }
+      }
+      if (n === 2 && getChips('trades').length === 0) {
+        alert('Please select at least one trade.'); return;
+      }
+      if (n === 3 && getChips('zones').length === 0) {
+        alert('Please select at least one zone.'); return;
+      }
+      showStep(n + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function prev(n) {
+      showStep(n - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function submitForm() {
+      const btn = document.getElementById('submit-btn');
+      const errEl = document.getElementById('err');
+      errEl.style.display = 'none';
+
+      const data = {
+        timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+        businessName: val('biz-name'),
+        contactPerson: val('contact-name'),
+        whatsapp: val('whatsapp'),
+        altPhone: val('alt-phone'),
+        yearsInBusiness: val('years'),
+        trades: getChips('trades').join(', '),
+        projectType: getRadio('proj-type'),
+        teamSize: val('team-size'),
+        zonesServed: getChips('zones').join(', '),
+        basedIn: val('base-area'),
+        gstRegistered: getRadio('gst'),
+        languages: getChips('langs').join(', '),
+        heardFrom: val('source'),
+        notes: val('notes'),
+        status: 'Pending review'
+      };
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Submitting...';
+
+      try {
+        await fetch(SHEET_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        showSummary(data);
+        showStep('done');
+      } catch (e) {
+        errEl.style.display = 'block';
+        errEl.textContent = 'Something went wrong. Please check your connection and try again.';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Submit listing';
+      }
+    }
+
+    function showSummary(data) {
+      const rows = [
+        ['Business', data.businessName],
+        ['Contact', data.contactPerson],
+        ['WhatsApp', data.whatsapp],
+        ['Experience', data.yearsInBusiness],
+        ['Trades', data.trades || '—'],
+        ['Project type', data.projectType || '—'],
+        ['Zones', data.zonesServed || '—'],
+        ['GST', data.gstRegistered || '—'],
+        ['Languages', data.languages || '—']
+      ];
+      document.getElementById('summary').innerHTML = rows
+        .map(r => `<div class="summary-row"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`)
+        .join('');
+    }
+
+    function resetForm() {
+      document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+      document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+      document.querySelectorAll('.chip.on, .radio-opt.on').forEach(el => el.classList.remove('on'));
+      document.getElementById('err').style.display = 'none';
+      showStep(1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
