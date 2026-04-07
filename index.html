@@ -119,6 +119,11 @@
       background: #fff;
     }
 
+    .field input.invalid {
+      border-color: #e53e3e;
+      background: #fff5f5;
+    }
+
     .field textarea { resize: vertical; min-height: 84px; }
 
     .field-row {
@@ -134,6 +139,15 @@
       color: #999;
       margin-top: 4px;
     }
+
+    .field-hint {
+      font-size: 12px;
+      color: #e53e3e;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .field-hint.visible { display: block; }
 
     .chips {
       display: flex;
@@ -157,7 +171,7 @@
 
     .chip:hover { border-color: #aaa; color: #222; }
 
-    .chip.on {
+    .chip.active {
       background: #eff6ff;
       border-color: #2563eb;
       color: #1d4ed8;
@@ -182,7 +196,7 @@
 
     .radio-opt:hover { border-color: #aaa; }
 
-    .radio-opt.on {
+    .radio-opt.active {
       background: #eff6ff;
       border-color: #2563eb;
       color: #1d4ed8;
@@ -200,7 +214,7 @@
       justify-content: center;
     }
 
-    .radio-opt.on .radio-dot {
+    .radio-opt.active .radio-dot {
       border-color: #2563eb;
       background: #2563eb;
     }
@@ -215,7 +229,7 @@
       transition: opacity 0.15s;
     }
 
-    .radio-opt.on .radio-dot::after { opacity: 1; }
+    .radio-opt.active .radio-dot::after { opacity: 1; }
 
     .btn-row {
       display: flex;
@@ -329,6 +343,17 @@
       margin-right: 6px;
     }
 
+    .section { margin-bottom: 1.25rem; }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
@@ -367,10 +392,12 @@
         <div class="field">
           <label>WhatsApp number <span class="req">*</span></label>
           <input type="tel" id="whatsapp" placeholder="10-digit number" maxlength="10" inputmode="numeric">
+          <div class="field-hint" id="whatsapp-hint">Enter a valid 10-digit number</div>
         </div>
         <div class="field">
           <label>Alternate number</label>
           <input type="tel" id="alt-phone" placeholder="Optional" maxlength="10" inputmode="numeric">
+          <div class="field-hint" id="alt-phone-hint">Must be a valid 10-digit number</div>
         </div>
       </div>
 
@@ -399,14 +426,36 @@
       <div class="field">
         <label>Trades offered <span class="req">*</span></label>
         <p class="hint">Select all that apply</p>
-        <div class="chips" id="trades">
-          <div class="chip" onclick="toggleChip(this)">Tiling</div>
-          <div class="chip" onclick="toggleChip(this)">Gypsum plaster</div>
-          <div class="chip" onclick="toggleChip(this)">POP / false ceiling</div>
-          <div class="chip" onclick="toggleChip(this)">Blockwork / masonry</div>
-          <div class="chip" onclick="toggleChip(this)">Waterproofing</div>
-          <div class="chip" onclick="toggleChip(this)">Screeding / flooring</div>
-          <div class="chip" onclick="toggleChip(this)">External plastering</div>
+
+        <div class="section">
+          <div class="section-label">Finishing</div>
+          <div class="chips">
+            <div class="chip" onclick="toggleChip(this)">Tiling</div>
+            <div class="chip" onclick="toggleChip(this)">Gypsum plaster</div>
+            <div class="chip" onclick="toggleChip(this)">POP / false ceiling</div>
+            <div class="chip" onclick="toggleChip(this)">External plastering</div>
+            <div class="chip" onclick="toggleChip(this)">Screeding / flooring</div>
+            <div class="chip" onclick="toggleChip(this)">Carpentry / joinery</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Structural / Civil</div>
+          <div class="chips">
+            <div class="chip" onclick="toggleChip(this)">Blockwork / masonry</div>
+            <div class="chip" onclick="toggleChip(this)">Waterproofing</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Mechanical, Electrical & Plumbing (MEP)</div>
+          <div class="chips">
+            <div class="chip" onclick="toggleChip(this)">Lighting</div>
+            <div class="chip" onclick="toggleChip(this)">Solar work</div>
+            <div class="chip" onclick="toggleChip(this)">Solar panel installation</div>
+            <div class="chip" onclick="toggleChip(this)">Plumbing</div>
+            <div class="chip" onclick="toggleChip(this)">Sewage treatment plant</div>
+          </div>
         </div>
       </div>
 
@@ -537,11 +586,7 @@
   </p>
 
   <script>
-    // ─────────────────────────────────────────────────────────────
-    // CONFIGURATION — paste your Google Apps Script URL here
-    // ─────────────────────────────────────────────────────────────
     const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwy2SMUo5NXnKLN242ywz2a4DtUNnd_ai098fDgVDJ7ZDntDe_TdY-SfaGWwA40YVfY-g/exec';
-    // ─────────────────────────────────────────────────────────────
 
     let currentStep = 1;
 
@@ -556,22 +601,24 @@
       currentStep = n;
     }
 
+    // Single toggleChip — uses 'active' class consistently
     function toggleChip(el) {
-      el.classList.toggle('on');
+      el.classList.toggle('active');
     }
 
     function selectRadio(el) {
-      const siblings = el.parentElement.querySelectorAll('.radio-opt');
-      siblings.forEach(s => s.classList.remove('on'));
-      el.classList.add('on');
+      el.parentElement.querySelectorAll('.radio-opt').forEach(s => s.classList.remove('active'));
+      el.classList.add('active');
     }
 
-    function getChips(id) {
-      return [...document.querySelectorAll(`#${id} .chip.on`)].map(c => c.textContent.trim());
+    // Collects all chips with class 'active' inside a given parent selector
+    function getChips(parentSelector) {
+      return [...document.querySelectorAll(`${parentSelector} .chip.active`)]
+        .map(c => c.textContent.trim());
     }
 
     function getRadio(id) {
-      const sel = document.querySelector(`#${id} .radio-opt.on`);
+      const sel = document.querySelector(`#${id} .radio-opt.active`);
       return sel ? sel.textContent.trim() : '';
     }
 
@@ -579,21 +626,56 @@
       return document.getElementById(id)?.value?.trim() || '';
     }
 
+    function isValidPhone(num) {
+      return /^\d{10}$/.test(num);
+    }
+
+    function setFieldError(inputId, hintId, show) {
+      const input = document.getElementById(inputId);
+      const hint = document.getElementById(hintId);
+      input.classList.toggle('invalid', show);
+      hint.classList.toggle('visible', show);
+    }
+
     function next(n) {
       if (n === 1) {
-        if (!val('biz-name') || !val('contact-name') || !val('whatsapp') || !val('years')) {
-          alert('Please fill in all required fields.'); return;
+        let hasError = false;
+
+        if (!val('biz-name') || !val('contact-name') || !val('years')) {
+          alert('Please fill in all required fields.');
+          return;
         }
-        if (val('whatsapp').length !== 10 || isNaN(val('whatsapp'))) {
-          alert('Please enter a valid 10-digit WhatsApp number.'); return;
+
+        // WhatsApp — required, must be exactly 10 digits
+        if (!isValidPhone(val('whatsapp'))) {
+          setFieldError('whatsapp', 'whatsapp-hint', true);
+          hasError = true;
+        } else {
+          setFieldError('whatsapp', 'whatsapp-hint', false);
         }
+
+        // Alternate number — optional, but if filled must be exactly 10 digits
+        const alt = val('alt-phone');
+        if (alt !== '' && !isValidPhone(alt)) {
+          setFieldError('alt-phone', 'alt-phone-hint', true);
+          hasError = true;
+        } else {
+          setFieldError('alt-phone', 'alt-phone-hint', false);
+        }
+
+        if (hasError) return;
       }
-      if (n === 2 && getChips('trades').length === 0) {
-        alert('Please select at least one trade.'); return;
+
+      if (n === 2 && getChips('#s2').length === 0) {
+        alert('Please select at least one trade.');
+        return;
       }
-      if (n === 3 && getChips('zones').length === 0) {
-        alert('Please select at least one zone.'); return;
+
+      if (n === 3 && getChips('#zones').length === 0) {
+        alert('Please select at least one zone.');
+        return;
       }
+
       showStep(n + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -602,6 +684,14 @@
       showStep(n - 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    // Clear error styling on input
+    document.getElementById('whatsapp').addEventListener('input', function() {
+      setFieldError('whatsapp', 'whatsapp-hint', false);
+    });
+    document.getElementById('alt-phone').addEventListener('input', function() {
+      setFieldError('alt-phone', 'alt-phone-hint', false);
+    });
 
     async function submitForm() {
       const btn = document.getElementById('submit-btn');
@@ -615,13 +705,13 @@
         whatsapp: val('whatsapp'),
         altPhone: val('alt-phone'),
         yearsInBusiness: val('years'),
-        trades: getChips('trades').join(', '),
+        trades: getChips('#s2').join(', '),
         projectType: getRadio('proj-type'),
         teamSize: val('team-size'),
-        zonesServed: getChips('zones').join(', '),
+        zonesServed: getChips('#zones').join(', '),
         basedIn: val('base-area'),
         gstRegistered: getRadio('gst'),
-        languages: getChips('langs').join(', '),
+        languages: getChips('#langs').join(', '),
         heardFrom: val('source'),
         notes: val('notes'),
         status: 'Pending review'
@@ -653,6 +743,7 @@
         ['Business', data.businessName],
         ['Contact', data.contactPerson],
         ['WhatsApp', data.whatsapp],
+        ['Alt number', data.altPhone || '—'],
         ['Experience', data.yearsInBusiness],
         ['Trades', data.trades || '—'],
         ['Project type', data.projectType || '—'],
@@ -668,7 +759,9 @@
     function resetForm() {
       document.querySelectorAll('input, textarea').forEach(el => el.value = '');
       document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
-      document.querySelectorAll('.chip.on, .radio-opt.on').forEach(el => el.classList.remove('on'));
+      document.querySelectorAll('.chip.active, .radio-opt.active').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.field-hint').forEach(el => el.classList.remove('visible'));
+      document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
       document.getElementById('err').style.display = 'none';
       showStep(1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
